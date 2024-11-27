@@ -78,30 +78,31 @@ pub fn get_file(
   obj_path obj_path: String,
   proj_id proj_id: String,
   token token: String,
+  content_type content_type: String,
 ) -> Result(storage.FireballStorage, error.FireballError) {
+  //Init URL
+  let url =
+    //Firestore url
+    "https://firebasestorage.googleapis.com/"
+    //Firestore Web API version
+    <> apiver
+    <> "/b/"
+    //Project id
+    <> proj_id
+    <> ".appspot.com/o/"
+    //Object to get without leading slash
+    <> string.replace(in: obj_path, each: "/", with: "%2F")
+    <> "?alt=media&token="
+    //Document path
+    <> token
+
   //Init a request object
-  case
-    request.to(
-      //Firestore url
-      "https://firebasestorage.googleapis.com/"
-      //Firestore Web API version
-      <> apiver
-      <> "/b/"
-      //Project id
-      <> proj_id
-      <> ".appspot.com/o/"
-      //Object to get without leading slash
-      <> string.replace(in: obj_path, each: "/", with: "%2F")
-      <> "?alt=media&token="
-      //Document path
-      <> token,
-    )
-  {
+  case request.to(url) {
     //If we didn't have an error making the request
     Ok(base_req) -> {
       //Add headers
       let req =
-        request.prepend_header(base_req, "Content-type", "application/json")
+        request.prepend_header(base_req, "Content-type", content_type)
         //Set method
         |> request.set_method(http.Get)
 
