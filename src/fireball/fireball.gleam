@@ -187,53 +187,8 @@ pub fn post_file(
 }
 
 //post_file_erl function is used to call erlang's inets and ssl funtions to send the request over httpc
-pub fn post_file_erl(
-  apiver apiver: String,
-  apikey apikey: String,
-  infile infile: String,
-  outfile outfile: String,
-  proj_id proj_id: String,
-) -> Result(String, error.FireballError) {
-  //Init a request object
-  case
-    request.to(
-      //Firestore url
-      "https://firestore.googleapis.com/"
-      //Firestore Web API version
-      <> apiver
-      <> "/b/"
-      //Project id
-      <> proj_id
-      <> ".appspot.com/o/"
-      //Filepath without leading slash
-      <> string.replace(in: outfile, each: "/", with: "%2F"),
-    )
-  {
-    //Check output
-    Ok(base_req) -> {
-      //Add headers
-      let req =
-        //Add headers
-        request.prepend_header(base_req, "Content-type", "text/plain")
-        |> request.set_header("Authorization", apikey)
-        //Set method
-        |> request.set_method(http.Post)
-
-      //Send the HTTP request to the server
-      case httpc.send(req) {
-        //Retrieve successful response
-        Ok(_) -> Ok("OK")
-
-        //Handle errors
-        Error(_) ->
-          Error(error.FireballError(err: "error while sending request"))
-      }
-    }
-
-    //Handle errors
-    Error(_) -> Error(error.FireballError(err: "error while forming request"))
-  }
-}
+@external(erlang, "post_file_erl", "post_file_erl")
+pub fn post_file_erl(url url: String, infile infile: String) -> String
 
 //post_file, but uses system cURL instead of native libaries
 pub fn post_file_external(
