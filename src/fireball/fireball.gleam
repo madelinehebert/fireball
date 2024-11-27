@@ -197,7 +197,7 @@ pub fn post_file_external(
   //Setup url to send to subprocess
   let url =
     //Firestore url
-    "https://firestore.googleapis.com/"
+    "https://firebasestorage.googleapis.com/"
     //Firestore Web API version
     <> apiver
     <> "/b/"
@@ -216,6 +216,7 @@ pub fn post_file_external(
     "upload=\"@" <> infile <> "\"",
     "-H",
     "\"Content-Type: multipart/form-data\"",
+    "--http1.1",
   ]
 
   //Run the command with system cURL
