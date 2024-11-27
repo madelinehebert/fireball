@@ -188,7 +188,7 @@ pub fn post_file(
 
 //post_file_erl function is used to call erlang's inets and ssl funtions to send the request over httpc
 @external(erlang, "post_file_erl", "post_file_erl")
-pub fn post_file_erl(url url: String, infile infile: String) -> String
+pub fn post_file_erl(url url: String, infile infile: String) -> Nil
 
 //post_file, but uses system cURL instead of native libaries
 pub fn post_file_external(
