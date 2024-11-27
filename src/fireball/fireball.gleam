@@ -193,6 +193,8 @@ pub fn post_file_external(
   infile infile: String,
   outfile outfile: String,
   proj_id proj_id: String,
+  external_script external_script: String,
+  wd wd: String,
 ) -> Result(String, error.FireballError) {
   //Setup url to send to subprocess
   let url =
@@ -207,20 +209,8 @@ pub fn post_file_external(
     //Filepath without leading slash
     <> string.replace(in: outfile, each: "/", with: "%2F")
 
-  //Setup full command string to send to subprocess
-  let payload = [
-    "-X",
-    "POST",
-    url,
-    "-F",
-    "upload=\"@" <> infile <> "\"",
-    "-H",
-    "\"Content-Type: multipart/form-data\"",
-    "--http1.1",
-  ]
-
   //Run the command with system cURL
-  case gleamyshell.execute("/usr/bin/curl", in: ".", args: payload) {
+  case gleamyshell.execute(external_script, in: wd, args: [url, infile]) {
     //Handle zero exit
     Ok(CommandOutput(0, output)) -> Ok(string.trim(output))
 
