@@ -13,9 +13,9 @@ import gleamyshell.{CommandOutput}
 import simplifile
 
 //Import firebase objects, document type
-import fireball/error
-import fireball/objects/document
-import fireball/objects/storage
+import error
+import objects/document
+import objects/storage
 
 //get_doc function to retrieve a document from Google's Firestore Database
 pub fn get_doc(
@@ -187,7 +187,7 @@ pub fn post_file(
 }
 
 //post_file_erl function is used to call erlang's inets and ssl funtions to send the request over httpc
-@external(erlang, "post_file_erl", "post_file_erl")
+@external(erlang, "fireball_ffi", "post_file_erl")
 pub fn post_file_erl(url url: String, infile infile: String) -> Nil
 
 //post_file, but uses system cURL instead of native libaries

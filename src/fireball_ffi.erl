@@ -1,4 +1,4 @@
--module(post_file_erl).
+-module(fireball_ffi).
 -export([post_file_erl/2]).
 
 % A function to upload a file to Google Firebase Storage.
