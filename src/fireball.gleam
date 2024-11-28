@@ -58,8 +58,7 @@ pub fn get_doc(
       //Send the HTTP request to the server
       case httpc.send(req) {
         //Retrieve successful response
-        Ok(resp) ->
-          Ok(document.FireballDocument(data: resp.body, creation_time: ""))
+        Ok(resp) -> Ok(document.FireballDocument(data: resp.body))
 
         //Handle errors
         Error(_) ->
@@ -69,6 +68,194 @@ pub fn get_doc(
 
     //Handle errors
     Error(_) -> Error(error.FireballError(err: "error while forming request"))
+  }
+}
+
+//put_file function to create a document in Google's Firestore Database
+pub fn put_doc(
+  apikey apikey: String,
+  apiver apiver: String,
+  database database: String,
+  collection_path collection_path: String,
+  doc_path doc_path: String,
+  input_doc input_doc: document.FireballDocument,
+  proj_id proj_id: String,
+) -> Result(document.FireballDocument, error.FireballError) {
+  //Init url
+  let url =
+    //Firestore url
+    "https://firestore.googleapis.com/"
+    //Firestore Web API version
+    <> apiver
+    <> "/projects/"
+    //Project id
+    <> proj_id
+    <> "/databases/"
+    //Database to use
+    <> database
+    <> "/documents/"
+    //Collection path
+    <> collection_path
+    <> "?documentId="
+    //Doc path
+    <> doc_path
+    //API Key for the google cloud project
+    <> "&key="
+    <> apikey
+
+  //Init a request object
+  case request.to(url) {
+    //
+    Ok(base_req) -> {
+      //Add headers
+      let req =
+        //Add headers
+        request.prepend_header(base_req, "Content-type", "application/json")
+        //Set method
+        |> request.set_method(http.Post)
+        |> request.set_body(document.doc_to_json(input_doc))
+
+      //Send the HTTP request to the server
+      case httpc.send(req) {
+        //Retrieve successful response
+        Ok(resp) -> Ok(document.FireballDocument(data: resp.body))
+
+        //Handle errors
+        Error(_) ->
+          Error(error.FireballError(err: "error while sending request"))
+      }
+    }
+    //Handle errors
+    Error(_) -> Error(error.FireballError(err: "error while creating request"))
+  }
+}
+
+//put_file function to create a document in Google's Firestore Database
+pub fn put_doc_from_string(
+  apikey apikey: String,
+  apiver apiver: String,
+  database database: String,
+  collection_path collection_path: String,
+  doc_path doc_path: String,
+  input_data input_data: String,
+  proj_id proj_id: String,
+) -> Result(document.FireballDocument, error.FireballError) {
+  //Init url
+  let url =
+    //Firestore url
+    "https://firestore.googleapis.com/"
+    //Firestore Web API version
+    <> apiver
+    <> "/projects/"
+    //Project id
+    <> proj_id
+    <> "/databases/"
+    //Database to use
+    <> database
+    <> "/documents/"
+    //Collection path
+    <> collection_path
+    <> "?documentId="
+    //Doc path
+    <> doc_path
+    //API Key for the google cloud project
+    <> "&key="
+    <> apikey
+
+  //Init a request object
+  case request.to(url) {
+    //
+    Ok(base_req) -> {
+      //Add headers
+      let req =
+        //Add headers
+        request.prepend_header(base_req, "Content-type", "application/json")
+        //Set method
+        |> request.set_method(http.Post)
+        //Set body
+        |> request.set_body(input_data)
+
+      //Send the HTTP request to the server
+      case httpc.send(req) {
+        //Retrieve successful response
+        Ok(resp) -> Ok(document.FireballDocument(data: resp.body))
+
+        //Handle errors
+        Error(_) ->
+          Error(error.FireballError(err: "error while sending request"))
+      }
+    }
+    //Handle errors
+    Error(_) -> Error(error.FireballError(err: "error while creating request"))
+  }
+}
+
+//put_file function to create a document in Google's Firestore Database
+pub fn put_doc_from_file(
+  apikey apikey: String,
+  apiver apiver: String,
+  database database: String,
+  collection_path collection_path: String,
+  doc_path doc_path: String,
+  input_doc input_doc: String,
+  proj_id proj_id: String,
+) -> Result(document.FireballDocument, error.FireballError) {
+  //Init url
+  let url =
+    //Firestore url
+    "https://firestore.googleapis.com/"
+    //Firestore Web API version
+    <> apiver
+    <> "/projects/"
+    //Project id
+    <> proj_id
+    <> "/databases/"
+    //Database to use
+    <> database
+    <> "/documents/"
+    //Collection path
+    <> collection_path
+    <> "?documentId="
+    //Doc path
+    <> doc_path
+    //API Key for the google cloud project
+    <> "&key="
+    <> apikey
+
+  //Init a request object
+  case request.to(url) {
+    //
+    Ok(base_req) -> {
+      //Get the data from the json file
+      case simplifile.read(input_doc) {
+        //If we found and read the file
+        Ok(json_data) -> {
+          //Add headers
+          let req =
+            //Add headers
+            request.prepend_header(base_req, "Content-type", "application/json")
+            //Set method
+            |> request.set_method(http.Post)
+            //Set body
+            |> request.set_body(json_data)
+
+          //Send the HTTP request to the server
+          case httpc.send(req) {
+            //Retrieve successful response
+            Ok(resp) -> Ok(document.FireballDocument(data: resp.body))
+
+            //Handle errors
+            Error(_) ->
+              Error(error.FireballError(err: "error while sending request"))
+          }
+        }
+
+        //Handle errors
+        Error(_) -> Error(error.FireballError(err: "failed to read file"))
+      }
+    }
+    //Handle errors
+    Error(_) -> Error(error.FireballError(err: "error while creating request"))
   }
 }
 
