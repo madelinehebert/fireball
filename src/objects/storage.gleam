@@ -1,7 +1,8 @@
+//gleam
 import gleam/dynamic.{type DecodeError, type Dynamic}
 import gleam/json.{object, string}
 
-//
+//decode
 import decode/zero as decode
 
 //
@@ -91,5 +92,6 @@ pub fn json_to_upload_data(
     ))
   }
 
+  //Run the decoder
   decode.run(input, decoder)
 }
