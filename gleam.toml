@@ -4,7 +4,7 @@ version = "1.0.8"
 # Fill out these fields if you intend to generate HTML documentation or publish
 # your project to the Hex package manager.
 #
-description = "A package for interfacing with a Google Firestore database and Google Firebase Storage."
+description = "A package for interfacing with a Google Firebase REST APIs."
 licences = ["AGPL-3.0-or-later"]
 # repository = { type = "github", user = "", repo = "" }
 # links = [{ title = "Website", href = "" }]
