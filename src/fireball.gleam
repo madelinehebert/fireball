@@ -5,6 +5,7 @@ import gleam/http
 import gleam/http/request
 import gleam/httpc
 import gleam/int
+import gleam/io
 import gleam/json
 import gleam/string
 
@@ -58,6 +59,166 @@ pub type UploadData {
     etag: String,
     download_tokens: String,
   )
+}
+
+///RTDB wrapper error
+pub type RTDBError {
+  Generic(err: String)
+}
+
+///Decode an RTDB error
+pub fn decode_error(input input: String) -> Result(RTDBError, json.DecodeError) {
+  json.decode(
+    input,
+    dynamic.decode1(Generic, dynamic.field("error", of: dynamic.string)),
+  )
+}
+
+///put_file function to create a node in Google's Realtime Database
+pub fn put_data(
+  apikey apikey: String,
+  input input: String,
+  dbpath dbpath: String,
+  dburl dburl: String,
+) -> Result(String, RTDBError) {
+  //Init url
+  let url =
+    //Firestore RTDB url
+    dburl
+    //DB Path
+    <> dbpath
+    <> ".json?auth="
+    //Auth secret
+    <> apikey
+
+  //Init a request object
+  case request.to(url) {
+    //
+    Ok(base_req) -> {
+      //Add headers
+      let req =
+        //Add headers
+        request.prepend_header(base_req, "Content-type", "application/json")
+        //Set method
+        |> request.set_method(http.Put)
+        //Set body
+        |> request.set_body(input)
+
+      //Send the HTTP request to the server
+      case httpc.send(req) {
+        //Retrieve successful response
+        Ok(resp) -> Ok(resp.body)
+
+        //Handle errors
+        Error(err) -> {
+          io.debug(err)
+          Error(Generic(err: "error while sending request"))
+        }
+      }
+    }
+    //Handle errors
+    Error(err) -> {
+      io.debug(err)
+      Error(Generic(err: "error while creating request"))
+    }
+  }
+}
+
+///put_file function to update fields in a node in Google's Realtime Database
+pub fn patch_data(
+  apikey apikey: String,
+  input input: String,
+  dbpath dbpath: String,
+  dburl dburl: String,
+) -> Result(String, RTDBError) {
+  //Init url
+  let url =
+    //Firestore RTDB url
+    dburl
+    //DB Path
+    <> dbpath
+    <> ".json?auth="
+    //Auth secret
+    <> apikey
+
+  //Init a request object
+  case request.to(url) {
+    //
+    Ok(base_req) -> {
+      //Add headers
+      let req =
+        //Add headers
+        request.prepend_header(base_req, "Content-type", "application/json")
+        //Set method
+        |> request.set_method(http.Patch)
+        //Set body
+        |> request.set_body(input)
+
+      //Send the HTTP request to the server
+      case httpc.send(req) {
+        //Retrieve successful response
+        Ok(resp) -> Ok(resp.body)
+
+        //Handle errors
+        Error(err) -> {
+          io.debug(err)
+          Error(Generic(err: "error while sending request"))
+        }
+      }
+    }
+    //Handle errors
+    Error(err) -> {
+      io.debug(err)
+      Error(Generic(err: "error while creating request"))
+    }
+  }
+}
+
+///get_data function to get data from a node in Google's Realtime Database
+pub fn get_data(
+  apikey apikey: String,
+  dbpath dbpath: String,
+  dburl dburl: String,
+) -> Result(String, RTDBError) {
+  //Init url
+  let url =
+    //Firestore RTDB url
+    dburl
+    //DB Path
+    <> dbpath
+    <> ".json?auth="
+    //Auth secret
+    <> apikey
+
+  //Init a request object
+  case request.to(url) {
+    //
+    Ok(base_req) -> {
+      //Add headers
+      let req =
+        //Add headers
+        request.prepend_header(base_req, "Content-type", "application/json")
+        //Set method
+        |> request.set_method(http.Get)
+
+      //Send the HTTP request to the server
+      case httpc.send(req) {
+        //Retrieve successful response
+        Ok(resp) -> Ok(resp.body)
+
+        //Handle errors
+        Error(err) -> {
+          io.debug(err)
+          Error(Generic(err: "error while sending request"))
+        }
+      }
+    }
+    //Handle errors
+    Error(err) -> {
+      io.debug(err)
+      Error(Generic(err: "error while creating request"))
+    }
+  }
 }
 
 ///get_doc function to retrieve a document from Google's Firestore Database
